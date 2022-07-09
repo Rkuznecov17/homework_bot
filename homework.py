@@ -107,6 +107,7 @@ def parse_status(homework):
             logger.error(homework_status)
             raise Exception('Статус домашнего задания не определен')
 
+
 def check_tokens():
     """Проверьте доступность токенов."""
     dict_token = {
