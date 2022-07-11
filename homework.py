@@ -48,8 +48,7 @@ def send_message(bot, message):
 
 def get_api_answer(current_timestamp):
     """Функция получающая ответ от api."""
-    timestamp = current_timestamp or int(time.time())
-    params = {'from_date': timestamp}
+    params = {'from_date': current_timestamp}
     try:
         homework_response = requests.get(
             url=ENDPOINT, headers=HEADERS, params=params
@@ -60,13 +59,12 @@ def get_api_answer(current_timestamp):
     if homework_response.status_code != HTTPStatus.OK.value:
         logger.error(homework_response.status_code)
         raise requests.HTTPError('Http ответ не равен 200')
-    else:
-        try:
-            serialized_response = homework_response.json()
-        except json.decoder.JSONDecodeError as error:
-            message = f'Не могу сериализовать в json: {error}'
-            logger.error(message)
-        return serialized_response
+    try: 
+        serialized_response = homework_response.json() 
+    except json.decoder.JSONDecodeError as error: 
+        message = f'Не могу сериализовать в json: {error}' 
+        logger.error(message) 
+    return serialized_response
 
 
 def check_response(response):
@@ -77,14 +75,13 @@ def check_response(response):
         message = f'Ответ не содержит необходимых ключей: {error}'
         logger.error(message)
         raise KeyError(message)
-    else:
-        if not isinstance(homeworks, list):
-            logger.error('Домашнее задание неправильного типа')
-            raise TypeError('Домашнее задание неправильного типа')
-        if not homeworks:
-            logger.error(homeworks)
-            raise KeyError('Домашнее задание пусто')
-        return homeworks
+    if not isinstance(homeworks, list): 
+        logger.error('Домашнее задание неправильного типа') 
+        raise TypeError('Домашнее задание неправильного типа') 
+    if not homeworks: 
+        logger.error(homeworks) 
+        raise KeyError('Домашнее задание пусто') 
+    return homeworks
 
 
 def parse_status(homework):
@@ -110,29 +107,17 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверьте доступность токенов."""
-    dict_token = {
-        'practicum_token': PRACTICUM_TOKEN,
-        'telegram_token': TELEGRAM_TOKEN,
-        'telecgram_chat_id': TELEGRAM_CHAT_ID,
-    }
-    for token, value in dict_token.items():
-        if not value:
-            logger.critical(f'{token} не доступен')
-            return False
-    return True
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def main():
     """Основная логика работы бота."""
-    if check_tokens() is True:
-        try:
-            bot = telegram.Bot(token=TELEGRAM_TOKEN)
-        except Exception as error:
-            message = f'БОТ не инициализирован: {error}'
-            logger.error(message)
-        current_timestamp = int(time.time())
+    current_timestamp = int(time.time())
+    if check_tokens():
+        bot = telegram.Bot(token=TELEGRAM_TOKEN)
     else:
-        return
+        message = f'БОТ не инициализирован: {error}'
+        logger.error(message)
 
     last_result = ''
 
@@ -141,11 +126,11 @@ def main():
             response = get_api_answer(current_timestamp)
             homeworks = check_response(response)
             verdict = parse_status(homeworks[0])
+            logger.info(verdict)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
         else:
-            logger.info(verdict)
             if last_result == verdict:
                 logger.info('Не изменится')
             else:
