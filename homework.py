@@ -59,11 +59,11 @@ def get_api_answer(current_timestamp):
     if homework_response.status_code != HTTPStatus.OK.value:
         logger.error(homework_response.status_code)
         raise requests.HTTPError('Http ответ не равен 200')
-    try: 
-        serialized_response = homework_response.json() 
-    except json.decoder.JSONDecodeError as error: 
-        message = f'Не могу сериализовать в json: {error}' 
-        logger.error(message) 
+    try:
+        serialized_response = homework_response.json()
+    except json.decoder.JSONDecodeError as error:
+        message = f'Не могу сериализовать в json: {error}'
+        logger.error(message)
     return serialized_response
 
 
@@ -75,12 +75,12 @@ def check_response(response):
         message = f'Ответ не содержит необходимых ключей: {error}'
         logger.error(message)
         raise KeyError(message)
-    if not isinstance(homeworks, list): 
-        logger.error('Домашнее задание неправильного типа') 
-        raise TypeError('Домашнее задание неправильного типа') 
-    if not homeworks: 
-        logger.error(homeworks) 
-        raise KeyError('Домашнее задание пусто') 
+    if not isinstance(homeworks, list):
+        logger.error('Домашнее задание неправильного типа')
+        raise TypeError('Домашнее задание неправильного типа')
+    if not homeworks:
+        logger.error(homeworks)
+        raise KeyError('Домашнее задание пусто')
     return homeworks
 
 
