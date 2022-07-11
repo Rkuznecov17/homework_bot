@@ -112,13 +112,16 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
+    if not check_tokens():
+        return
     current_timestamp = int(time.time())
-    if check_tokens():
+    try:
         bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    else:
+    except Exception as error:
         message = f'БОТ не инициализирован: {error}'
         logger.error(message)
-
+    else:
+        return
     last_result = ''
 
     while True:
