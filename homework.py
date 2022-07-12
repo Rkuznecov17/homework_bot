@@ -113,15 +113,10 @@ def check_tokens():
 def main():
     """Основная логика работы бота."""
     if not check_tokens():
+        logger.critical('Недоступна одна из переменных окружения')
         return
     current_timestamp = int(time.time())
-    try:
-        bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    except Exception as error:
-        message = f'БОТ не инициализирован: {error}'
-        logger.error(message)
-    else:
-        return
+        
     last_result = ''
 
     while True:
@@ -130,15 +125,14 @@ def main():
             homeworks = check_response(response)
             verdict = parse_status(homeworks[0])
             logger.info(verdict)
-        except Exception as error:
-            message = f'Сбой в работе программы: {error}'
-            logger.error(message)
-        else:
             if last_result == verdict:
                 logger.info('Не изменится')
             else:
                 last_result = verdict
-                send_message(bot, verdict)
+                send_message(verdict)
+        except Exception as error:
+            message = f'Сбой в работе программы: {error}'
+            logger.error(message)
         finally:
             time.sleep(RETRY_TIME)
 
