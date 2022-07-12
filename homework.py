@@ -6,7 +6,6 @@ import time
 from http import HTTPStatus
 
 import requests
-import telegram
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -116,7 +115,7 @@ def main():
         logger.critical('Недоступна одна из переменных окружения')
         return
     current_timestamp = int(time.time())
-        
+
     last_result = ''
 
     while True:
