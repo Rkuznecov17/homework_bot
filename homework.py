@@ -6,6 +6,7 @@ import time
 from http import HTTPStatus
 
 import requests
+import telegram
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -115,7 +116,7 @@ def main():
         logger.critical('Недоступна одна из переменных окружения')
         return
     current_timestamp = int(time.time())
-
+    bot = telegram.Bot(token=TELEGRAM_TOKEN)
     last_result = ''
 
     while True:
@@ -128,7 +129,7 @@ def main():
                 logger.info('Не изменится')
             else:
                 last_result = verdict
-                send_message(verdict)
+                send_message(bot, verdict)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
